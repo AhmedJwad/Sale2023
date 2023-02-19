@@ -10,6 +10,12 @@ namespace Sale.Api.Data
             
         }
 
-        public DbSet<Country>
+        public DbSet<Country>countries { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
+        }
     }
 }
