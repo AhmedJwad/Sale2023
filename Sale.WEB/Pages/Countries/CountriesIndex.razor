@@ -1,0 +1,45 @@
+﻿@page "/country"
+
+@using Sale.WEB.Repositories;
+
+@inject IRepository Repostory
+<h3>CountriesIndex</h3>
+@if(Countries is null)
+{
+    <p>there is no countries</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var country in Countries!)
+            {
+                <tr>
+                    <td>
+                        <a class="btn btn-warning">Edit</a>
+                        <button class="btn btn-danger">Delete</button>
+                    </td>
+                    <td>
+                        @country.Name
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+@code {
+    public List<Country>? Countries { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responsehttp = await Repostory.Get<List<Country>>("/api/countries");
+        Countries = responsehttp.Response!;
+    }
+}
