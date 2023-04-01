@@ -1,13 +1,10 @@
 ﻿@page "/country"
 
-@using Sale.WEB.Repositories;
-
 @inject IRepository Repostory
 <h3>CountriesIndex</h3>
+<a class="btn btn-sm btn-primary float-end" href="/countries/create"> Add Country</a>
 <GenericList MyList="Countries">
-    <Loading>
-        <p>Loading...</p>
-</Loading>
+   
     <Body>
         <table class="table table-striped">
             <thead>
