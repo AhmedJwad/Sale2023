@@ -6,7 +6,11 @@ namespace Sale.WEB.Repositories
     public class Repository : IRepository
     {
         private readonly HttpClient _httpClient;
-
+        //This means that when deserializing JSON into
+        //a .NET object, the serializer will match JSON property
+        //names to object property names without regard for case sensitivity.
+        //For example, a JSON property named "first_name"
+        //will be correctly mapped to an object property named FirstName.
         private JsonSerializerOptions _jsonDefaultOptions => new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
@@ -22,6 +26,9 @@ namespace Sale.WEB.Repositories
             var responseHttp = await _httpClient.GetAsync(url);
             if (responseHttp.IsSuccessStatusCode)
             {
+                //If IsSuccessStatusCode is true, the body data is deserialized using
+                //the UnserializeAnswer<T> function and passing in the original response
+                //responseHttp and the selected JSON options _jsonDefaultOptions
                 var response = await UnserializeAnswer<T>(responseHttp, _jsonDefaultOptions);
                 return new HttpResponseWrapper<T>(response, false, responseHttp);
             }

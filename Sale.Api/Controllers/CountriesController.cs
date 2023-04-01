@@ -17,17 +17,46 @@ namespace Sale.Api.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult>Get()
+        public async Task<IActionResult> GetAsync()
         {
             return Ok(await _context.countries.ToListAsync());
         }
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetAsync(int id )
+        {
+          var country=  await _context.countries.FirstOrDefaultAsync(x=>x.Id==id);
+            if(country==null)
+            {
+                return NotFound();
+            }
+            return Ok(country);
+        }
 
         [HttpPost]
-        public async Task<IActionResult>Post(Country country)
+        public async Task<IActionResult>PostAsync(Country country)
         {
             _context.Add(country);
             await _context.SaveChangesAsync();
             return Ok();
+        }
+        [HttpPut]
+        public async Task<IActionResult> PutAsync(Country country)
+        {
+            _context.Update(country);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var country = await _context.countries.FirstOrDefaultAsync(x => x.Id == id);
+            if (country == null)
+            {
+                return NotFound();
+            }
+            _context.Remove(country);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
