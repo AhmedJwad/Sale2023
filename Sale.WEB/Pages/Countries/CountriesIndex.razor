@@ -61,20 +61,14 @@
             return;
         }
         var repositoryhttp = await Repostory.Delete($"/api/countries/{country.Id}");
-        if(repositoryhttp.Error)
+        if (repositoryhttp.Error)
         {
-            if(repositoryhttp.HttpResponseMessage.StatusCode==System.Net.HttpStatusCode.NotFound)
-            {
-                navigationManager.NavigateTo("/");
-            }
-            else
-            {
-                var messageError = await repositoryhttp.GetErrorMessageAsync();
-                sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
-            }
-        }else
-        {
-           await Load();
+
+            var messageError = await repositoryhttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            return;
         }
+        await Load();
+        
     }
 }

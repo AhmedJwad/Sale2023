@@ -36,15 +36,55 @@ namespace Sale.Api.Controllers
         public async Task<IActionResult>PostAsync(Country country)
         {
             _context.Add(country);
-            await _context.SaveChangesAsync();
-            return Ok();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("There is already a country with the same name.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
+
         }
         [HttpPut]
         public async Task<IActionResult> PutAsync(Country country)
         {
             _context.Update(country);
-            await _context.SaveChangesAsync();
-            return Ok();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("There is already a country with the same name.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
+
         }
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)

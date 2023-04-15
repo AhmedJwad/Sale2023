@@ -8,18 +8,18 @@ using System.Xml.Linq;
 
 namespace Sale.Shared.Entities
 {
-    public class Country
+   public class City
     {
         public int Id { get; set; }
-        [Display(Name = "Country")]
+        [Display(Name = "City")]
         [MaxLength(100, ErrorMessage = "The {0} field must have a maximum of {1} characters.")]
         [Required(ErrorMessage = "The {0} field is required.")]
 
         public string Name { get; set; } = null!;
 
-        public ICollection<State>? States { get; set; }
+        public int StateId { get; set; }
 
-        public int StateNumber => States==null ? 0:States.Count();
-         
+        public State? State { get; set; }
+
     }
 }
