@@ -6,7 +6,7 @@ using Sale.Shared.Entities;
 
 namespace Sale.Api.Controllers
 {
-    [Route("api/[cities]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CitiesController : ControllerBase
     {
@@ -36,7 +36,7 @@ namespace Sale.Api.Controllers
             try
             {
                 _context.Add(city);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
@@ -59,7 +59,7 @@ namespace Sale.Api.Controllers
             try
             {
                 _context.Update(city);
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
                 return Ok(city);    
             }
             catch (DbUpdateException dbUpdateException)
@@ -86,7 +86,7 @@ namespace Sale.Api.Controllers
                 return NotFound();
             }
             _context.Remove(city);
-            _context.SaveChangesAsync();
+            await  _context.SaveChangesAsync();
             return Ok(city);    
         }
     }

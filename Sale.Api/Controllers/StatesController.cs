@@ -6,7 +6,7 @@ using Sale.Shared.Entities;
 
 namespace Sale.Api.Controllers
 {
-    [Route("api/[states]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class StatesController : ControllerBase
     {
@@ -91,7 +91,7 @@ namespace Sale.Api.Controllers
             }
 
             _context.Remove(state);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return Ok(state);   
         }
     }
