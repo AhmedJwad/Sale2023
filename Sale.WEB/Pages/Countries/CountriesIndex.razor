@@ -19,12 +19,17 @@
                 {
                     <tr>
                         <td>
+                            @country.Name
+                        </td>
+                        <td>
+                            @country.StateNumber
+                        </td>
+                        <td>
+                            <a class="btn btn-info" href="/countries/Details/@country.Id">Details</a>
                             <a class="btn btn-warning" href="/countries/edit/@country.Id">Edit</a>
                             <button class="btn btn-danger"onclick="@(()=>Delete(country))">Delete</button>
                         </td>
-                        <td>
-                            @country.Name
-                        </td>
+                       
                     </tr>
                 }
             </tbody>

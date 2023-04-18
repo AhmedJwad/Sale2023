@@ -19,7 +19,13 @@ namespace Sale.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.countries.ToListAsync());
+            return Ok(await _context.countries.Include(x=>x.States).ToListAsync());
+        }
+
+        [HttpGet("Full")]
+        public async Task<IActionResult>GetFullAsync()
+        {
+            return Ok(await _context.countries.Include(x=>x.States).ThenInclude(c=>c.Cities).ToListAsync());  
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync(int id )
