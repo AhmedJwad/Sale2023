@@ -1,0 +1,58 @@
+﻿@page "/cities/edit/{cityId:int}"
+@inject IRepository repostrey 
+@inject NavigationManager navigationmanager
+@inject SweetAlertService sweetAlertService
+
+<h3>CityEdit</h3>
+@if (city is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <CityForm @ref="cityForm"  city="city" OnValidSubmit="EditAsync" ReturnAction="Return"/>
+}
+@code {
+    private City? city ;
+    private CityForm? cityForm;
+
+    [Parameter]
+    public int cityId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responsehttp = await repostrey.Get<City>($"/api/cities/{cityId}");
+        if (responsehttp.Error)
+        {
+            if (responsehttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationmanager.NavigateTo("/countries");
+                return;
+            }
+
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        city = responsehttp.Response;
+    }
+    private async Task EditAsync()
+    {
+        var responseHttp = await repostrey.Put("/api/cities", city);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Return();
+    }
+    private void Return()
+    {
+        cityForm!.FormPostedSuccessfully = true;
+        navigationmanager.NavigateTo($"/states/details/{city!.StateId}");
+    }
+
+}

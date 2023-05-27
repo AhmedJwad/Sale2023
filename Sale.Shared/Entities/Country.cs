@@ -19,7 +19,7 @@ namespace Sale.Shared.Entities
 
         public ICollection<State>? States { get; set; }
 
-        public int StateNumber => States==null ? 0:States.Count();
+        public int StateNumber => States==null ? 0:States.Count;
          
     }
 }

@@ -1,0 +1,103 @@
+﻿@page "/states/details/{stateId:int}"
+@inject IRepository respostry;
+@inject NavigationManager navigationManager
+@inject SweetAlertService SweetAlertService
+
+@if(state is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h3>@state.Name</h3>
+    <div class="mb-2">
+        <a class="btn btn-primary" href="/cities/create/@state.Id">Create</a>
+        <a class="btn btn-success" href="/countries/details/@state.CountryId">Go Back</a>
+    </div>
+
+    <GenericList MyList="cities">
+        <Body>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>City</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var city in cities!)
+                    {
+                        <tr>
+                            <td>
+                                @city.Name
+                            </td>
+                            <td>
+                                <a class="btn btn-warning" href="/cities/edit/@city.Id">Edit</a>
+                                <button class="btn btn-danger" @onclick=@(() => DeleteAsync(city.Id))>Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </Body>
+    </GenericList>
+
+}
+@code
+{
+    private State? state;
+    private List<City>? cities; 
+
+    [Parameter]
+    public int stateId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var responsehttp = await respostry.Get<State>($"/api/states/{stateId}");
+        if(responsehttp.Error)
+        {
+            if(responsehttp.HttpResponseMessage.StatusCode==System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/countries");
+                return;
+            }
+            var message = await responsehttp.GetErrorMessageAsync();
+            await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        state = responsehttp.Response;
+        cities = state!.Cities!.ToList();
+    }
+
+    private async Task DeleteAsync(int cityId)
+    {
+        var result =await SweetAlertService.FireAsync(new SweetAlertOptions
+        {
+            Title="Confirmation",
+                Text = "Do you really want to delete the record?",
+                Icon=SweetAlertIcon.Question,
+                ShowCancelButton=true,
+                CancelButtonText="No",
+                ConfirmButtonText="Yes",
+        });
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if(confirm)
+        {
+            return;
+        }
+        var responshttp = await respostry.Delete($"/api/cities/{cityId}");
+        if(responshttp.Error)
+        {
+            var message = await responshttp.GetErrorMessageAsync();
+            await SweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+
+        }
+       await LoadAsync();
+    }
+}
