@@ -1,15 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Sale.Shared.Entities;
 
 namespace Sale.Api.Data
 {
-    public class DataContext:DbContext
+    public class DataContext : IdentityDbContext<User>
     {
         public DataContext(DbContextOptions<DataContext>options):base(options) 
         {
             
         }
-
+               
         public DbSet<City>Cities { get; set; }  
         public DbSet<Country>countries { get; set; }
 
