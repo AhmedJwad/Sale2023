@@ -2,7 +2,7 @@
 @inject IRepository repostrey 
 @inject NavigationManager navigationmanager
 @inject SweetAlertService sweetAlertService
-
+@attribute [Authorize(Roles = "Admin")]
 <h3>CityEdit</h3>
 @if (city is null)
 {

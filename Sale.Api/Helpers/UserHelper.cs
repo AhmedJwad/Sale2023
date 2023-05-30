@@ -22,6 +22,7 @@ namespace Sale.Api.Helpers
         {
           return await _userManager.CreateAsync(user, password);
         }
+      
 
         public async Task AddUsertoRoleAsync(User user, string roleName)
         {

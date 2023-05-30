@@ -3,7 +3,7 @@
 @inject IRepository respostery
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-
+@attribute [Authorize(Roles = "Admin")]
 <h3>City Create</h3>
 
 <CityForm @ref="cityForm" city="city" OnValidSubmit="CreateAync" ReturnAction="Return"/>

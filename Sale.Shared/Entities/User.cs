@@ -26,7 +26,7 @@ namespace Sale.Shared.Entities
         public string Address { get; set; } = null;
 
         [Display(Name ="Photo")]
-        public string Photo { get; set; }
+        public string? Photo { get; set; }
 
         [Display(Name ="User type")]
         public UserType UserType { get; set; }

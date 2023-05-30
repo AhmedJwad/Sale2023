@@ -10,9 +10,21 @@
 
 @code {
     private int currentCount = 0;
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
 
-    private void IncrementCount()
+    private async Task IncrementCount()
     {
-        currentCount++;
+        var athenticationtask =await authenticationStateTask;
+        bool Isauthenticate = athenticationtask.User.Identity!.IsAuthenticated;
+        if (Isauthenticate)
+        {
+            currentCount++;
+        }
+        else
+        {
+            currentCount--;
+        }
+
     }
 }

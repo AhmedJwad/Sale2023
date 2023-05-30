@@ -2,6 +2,7 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
 <h3>Create State</h3>
 <StateForm @ref="stateForm" state="state"  onvalidSubmit="CreateAsync" ReturnAction="Return"/>
 @code {

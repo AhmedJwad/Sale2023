@@ -2,7 +2,7 @@
 @inject IRepository repostry
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-
+@attribute [Authorize(Roles = "Admin")]
 @if (country is null)
 {
     <p>Loading</p>

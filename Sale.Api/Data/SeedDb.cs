@@ -22,47 +22,46 @@ namespace Sale.Api.Data
         public async Task SeedAsync() 
         {
             await _context.Database.EnsureCreatedAsync();
-            //await CeckcountriesAsync();
-            await CheckRoleAsync();
-            await CheckUserAsync("1010", "Ahmed", "murshadi", "AhmedAlmurshadi@yopmail.com", "07504412021", "iraq-babylon"
-                , UserType.Admin);
-            
+            // await CeckcountriesAsync();
+            await CheckRolesAsync();
+           await CheckUserAsync("1010", "Ahmed", "Almurshadi", "AhmedAlmurshadi@yopmail.com", "322 311 4620", "Babylon hilla babil", UserType.Admin);
+
+
+
+
         }
 
-        private async Task CheckRoleAsync()
-        {
-            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
-            await _userHelper.CheckRoleAsync(UserType.User.ToString());
-        }
 
-        private async Task<User> CheckUserAsync(string document, string firstname, string lastname, string email, string phonenumber,
-            string Adress, UserType userType)
+
+        private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
         {
             var user = await _userHelper.GetUserAsync(email);
-            var city=await _context.Cities.FirstOrDefaultAsync(x=>x.Name=="babil");
-            if(city==null)
-            {
-                city = await _context.Cities.FirstOrDefaultAsync();
-            }
-            if (user == null) 
+            if (user == null)
             {
                 user = new User
                 {
-                    Firstname=firstname,
-                    LastName=lastname,
-                    Document=document,
-                    Email=email,
-                    PhoneNumber=phonenumber,
-                    Address=Adress,
-                    City=city,
-                    UserType=userType,
-                    CityId=city.Id,
+                    Firstname = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    UserName = email,
+                    PhoneNumber = phone,
+                    Address = address,
+                    Document = document,
+                    City = _context.Cities.FirstOrDefault(),
+                    UserType = userType,
                 };
+
                 await _userHelper.AddUserAsync(user, "123456");
                 await _userHelper.AddUsertoRoleAsync(user, userType.ToString());
-
             }
+
             return user;
+        }
+
+        private async Task CheckRolesAsync()
+        {
+            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
+            await _userHelper.CheckRoleAsync(UserType.User.ToString());
         }
 
         private async Task CeckcountriesAsync()
