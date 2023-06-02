@@ -15,10 +15,10 @@ namespace Sale.WEB.Auth
                 new Claim("FirstName", "Ahmed"),
                 new Claim("LastName", "Almurshadi"),
                  new Claim(ClaimTypes.Name, "Ahmed@yopmail.com"),
-                 new Claim(ClaimTypes.Role, "User"),
+                 new Claim(ClaimTypes.Role, "Admin"),
 
             }, authenticationType:"test");
-            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(anonimous)));   
+            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(Ahmeduser)));   
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Sale.Api.Controllers
 
             return BadRequest(result.Errors.FirstOrDefault());
         }
-
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody]LoginDTO model)
         {
             var result = await _userHelper.LoginAsync(model);
