@@ -49,6 +49,7 @@ namespace Sale.Api.Data
                     Document = document,
                     City = _context.Cities.FirstOrDefault(),
                     UserType = userType,
+                  
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");

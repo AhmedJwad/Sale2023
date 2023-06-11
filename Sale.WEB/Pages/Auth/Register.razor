@@ -1,0 +1,109 @@
+﻿@page "/Register"
+
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+@inject ILoginService loginservice
+
+<h3>Register New User</h3>
+
+<EditForm Model="userDTO" OnValidSubmit="CreteUserAsync">
+ <DataAnnotationsValidator/>
+
+    <div class="row">
+        <div class="col-6">
+            <div class="mb-3">
+                <label>First Name:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@userDTO.Firstname" />
+                    <ValidationMessage For="@(() => userDTO.Firstname)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Last Name:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@userDTO.LastName" />
+                    <ValidationMessage For="@(() => userDTO.LastName)" />
+                </div>
+            </div>
+            <div class="mb-3">
+            <label>Document:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@userDTO.Document" />
+                    <ValidationMessage For="@(() => userDTO.Document)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Phone:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@userDTO.PhoneNumber" />
+                    <ValidationMessage For="@(() => userDTO.PhoneNumber)" />
+                </div>
+            </div>
+            <div class="mb-3">
+            <label>Address:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@userDTO.Address" />
+                    <ValidationMessage For="@(() => userDTO.Address)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Email:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@userDTO.Email" />
+                    <ValidationMessage For="@(() => userDTO.Email)" />
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="mb-3">
+                <label>Cities:</label>
+                <div>
+                    <InputNumber class="form-control" @bind-Value="@userDTO.CityId" />
+                    <ValidationMessage For="@(() => userDTO.CityId)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Photo:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@userDTO.Photo" />
+                    <ValidationMessage For="@(() => userDTO.Photo)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Password:</label>
+                <div>
+                    <InputText type="password" class="form-control" @bind-Value="@userDTO.Password" />
+                    <ValidationMessage For="@(() => userDTO.Password)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Password Confirmation:</label>
+                <div>
+                    <InputText type="password" class="form-control" @bind-Value="@userDTO.PasswordConfirm" />
+                    <ValidationMessage For="@(() => userDTO.PasswordConfirm)" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Register</button>
+</EditForm>
+
+@code {
+    private UserDTO userDTO = new();
+
+    private async Task CreteUserAsync()
+    {
+        userDTO.UserName = userDTO.Email;
+        userDTO.UserType = UserType.User;
+        var repostoryhttp = await repository.Post<UserDTO, TokenDTO>("/api/accounts/CreateUser", userDTO);
+        if(repostoryhttp.Error)
+        {
+            var message = await repostoryhttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("error", message, SweetAlertIcon.Error);
+        }
+        await loginservice.LoginAsync(repostoryhttp.Response!.Token);
+        navigationManager.NavigateTo("/");
+
+    }
+}
