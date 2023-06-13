@@ -57,9 +57,48 @@
         </div>
         <div class="col-6">
             <div class="mb-3">
+                <label>Countries:</label>
+                <div>
+                    <select class="form-select" @onchange="CountryChangedAsync">
+                        <option value="0">-- Select a country --</option>
+                        @if (countries is not null)
+                        {
+                            @foreach (var country in countries)
+                            {
+                                <option value="@country.Id">@country.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>state/department:</label>
+                <div>
+                    <select class="form-select" @onchange="StateChangedAsync">
+                        <option value="0">-- Select a state/department --</option>
+                        @if (states is not null)
+                        {
+                            @foreach (var state in states)
+                            {
+                                <option value="@state.Id">@state.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
                 <label>Cities:</label>
                 <div>
-                    <InputNumber class="form-control" @bind-Value="@userDTO.CityId" />
+                    <select class="form-select" @bind="userDTO.CityId">
+                        <option value="0">-- Select a city --</option>
+                        @if (cities is not null)
+                        {
+                            @foreach (var city in cities)
+                            {
+                                <option value="@city.Id">@city.Name</option>
+                            }
+                        }
+                    </select>
                     <ValidationMessage For="@(() => userDTO.CityId)" />
                 </div>
             </div>
@@ -91,7 +130,57 @@
 
 @code {
     private UserDTO userDTO = new();
+    private List<Country>? countries;
+    private List<State>? states;
+    private List<City>? cities;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCountriesAsync();
+    }
+    private async Task CountryChangedAsync(ChangeEventArgs e)
+    {
+        var selectedcountry=Convert.ToInt32(e.Value!);
+        await LoadStatesAsyn(selectedcountry);
+    }
+    private async Task StateChangedAsync(ChangeEventArgs e)
+    {
+        var selectedstate=Convert.ToInt32(e.Value!);
+        await LoadCitiesAsyn(selectedstate);
+    }
+    private async Task LoadCountriesAsync()
+    {
+        var responsehttp = await repository.Get<List<Country>>($"/api/countries/combo");
+        if(responsehttp.Error)
+        {
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        countries = responsehttp.Response;
+    }
+    private async Task LoadStatesAsyn(int countryId)
+    {
+        var responsehttp = await repository.Get<List<State>>($"/api/states/combo/{countryId}");
+        if (responsehttp.Error)
+        {
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        states = responsehttp.Response;
+    }
+    private async Task LoadCitiesAsyn(int stateId)
+    {
+        var responsehttp = await repository.Get<List<City>>($"/api/cities/combo/{stateId}");
+        if (responsehttp.Error)
+        {
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        cities = responsehttp.Response;
+    }
     private async Task CreteUserAsync()
     {
         userDTO.UserName = userDTO.Email;

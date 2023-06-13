@@ -23,8 +23,17 @@ namespace Sale.Api.Controllers
         {
             _context = context;
         }
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult>GetCombo()
+        {
+            return Ok(await _context.countries.ToListAsync());
+        }
+
+       
+        
         [HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery]PaginationDTO pagination)
+        public async Task<ActionResult> GetAsync([FromQuery]PaginationDTO pagination)
         {
             var queryable = _context.countries.Include(x => x.States).AsQueryable();
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
