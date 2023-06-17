@@ -4,58 +4,78 @@
 @inject NavigationManager navigationManager
 @attribute [Authorize(Roles ="Admin")]
 <h3>CountriesIndex</h3>
+@if (Countries is null)
+{
+    <div class="" spinner" />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <span>
+                <a class="btn btn-primary" href="/countries/create"><i class="oi-oi-plus">Add Country</i></a>
+            </span>
+        </div>
+        <div class="card-body">
+            <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Search..." @bind-value="Filter" />
+        </div>
+        <div class="mx-1">
+            <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filter</button>
+            <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Cancel</button>
+        </div>
+      </div>
+  
+       
+            
+      
 
-<div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
-    <div>
-        <a class="btn btn-primary" href="/countries/create">Add Country</a>
-    </div>
-    <div class="mx-2">
-        <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Search..." @bind-value="Filter" />
-    </div>
-    <div>
-        <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filter</button>
-        <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Cancel</button>
-    </div>
-</div>
-
-<Pagination CurrentPage="currentPage"
+    <Pagination CurrentPage="currentPage"
             TotalPages="totalPages"
             SelectedPage="SelectedPage" />
 
-<GenericList MyList="Countries">
-   
-    <Body>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                     <th>Country</th>
-                    <th style="width:220px">Estados / Departamentos</th>
-                    <th style="width:260px"></th>
 
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var country in Countries!)
-                {
+    <GenericList MyList="Countries">
+
+        <Body>
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>
-                            @country.Name
-                        </td>
-                        <td>
-                            @country.StateNumber
-                        </td>
-                        <td>
-                            <a class="btn btn-info" href="/countries/details/@country.Id">Details</a>
-                            <a class="btn btn-warning" href="/countries/edit/@country.Id">Edit</a>
-                            <button class="btn btn-danger"onclick="@(()=>Delete(country))">Delete</button>
-                        </td>
-                       
+                        <th>Country</th>
+                        <th style="width:220px">States / Departments</th>
+                        <th style="width:260px"></th>
+
                     </tr>
-                }
-            </tbody>
-        </table>
-    </Body>
-</GenericList>
+                </thead>
+                <tbody>
+                    @foreach (var country in Countries!)
+                    {
+                        <tr>
+                            <td>
+                                @country.Name
+                            </td>
+                            <td>
+                                @country.StateNumber
+                            </td>
+                            <td>
+                                <a href="/countries/details/@country.Id" class="btn btn-info btn-sm">
+                                    <i class="oi oi-list" /> Details
+                                </a>
+                                <a href="/countries/edit/@country.Id" class="btn btn-warning btn-sm">
+                                    <i class="oi oi-pencil" /> Edit
+                                </a>
+                                <button class="btn btn-danger" onclick="@(()=>Delete(country))">
+                                    <i class="oi oi-trash" /> Delete
+                                </button>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </Body>
+    </GenericList>
+
+}
 
 @code {
     public List<Country>? Countries { get; set; }

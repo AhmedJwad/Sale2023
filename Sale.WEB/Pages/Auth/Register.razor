@@ -9,6 +9,13 @@
 
 <EditForm Model="userDTO" OnValidSubmit="CreteUserAsync">
  <DataAnnotationsValidator/>
+  <div class="card">
+        <div class="card-header">
+            <span>
+                <i class="oi oi-person" /> Register New User               
+            </span>
+        </div>
+        <div class="card-body">
 
     <div class="row">
         <div class="col-6">
@@ -125,7 +132,9 @@
             </div>
         </div>
     </div>
-    <button class="btn btn-primary" type="submit">Register</button>
+    </div>
+    </div>
+    <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Register</button>
 </EditForm>
 
 @code {

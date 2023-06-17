@@ -5,12 +5,19 @@
 @inject ILoginService loginService
 
 
-<h3>Login</h3>
+
 <EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
     <DataAnnotationsValidator />
-
     <div class="row">
-        <div class="col-4">
+    <div class="col-md-4  offset-md-4">
+            <div class="card bg-light">
+                <div class="card-header justify-content-center">
+                    <span>
+                        <i class="oi oi-account-login" /> Login                      
+                    </span>
+                </div>
+                <div class="card-body">
+
             <div class="mb-3">
                 <label>Email:</label>
                 <div>
@@ -25,9 +32,11 @@
                     <ValidationMessage For="@(() => loginDTO.Password)" />
                 </div>
             </div>
-            <button class="btn btn-primary" type="submit">Login</button>
+                    <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Login</button>
         </div>
     </div>
+</div>
+</div>
 </EditForm>
 
 @code {
