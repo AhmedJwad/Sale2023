@@ -1,0 +1,40 @@
+﻿@inject NavigationManager navigationManager
+<AuthorizeView>
+    <Authorized>
+        <span>Hello, @context.User.Identity!.Name</span>
+        @if (!string.IsNullOrEmpty(photoUser))
+        {
+            <div class="mx-2">
+                <img src="@photoUser" width="50" height="50" style="border-radius:50%" />
+            </div>
+        }
+
+        <a href="Logout" class="nav-link btn btn-link">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="Register" class="nav-link btn btn-link">Register</a>
+        <a href="Login" class="nav-link btn btn-link">Login</a>
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    private string? photoUser;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        var authenticationState = await authenticationStateTask;
+        var claims = authenticationState.User.Claims.ToList();
+        var photoClaim = claims.FirstOrDefault(x => x.Type == "Photo");
+        if (photoClaim is not null)
+        {
+            var imageName = Path.GetFileName(photoClaim.Value);
+            photoUser = $"{navigationManager.BaseUri}images/users/{imageName}";
+        }
+        // var imageName = Path.GetFileName(photoClaim.Value);
+        // photoUser = imageName == string.Empty
+        //     ? "http://soccerworldcup.somee.com/images/noimage.png"
+        //     : $"{navigationManager.BaseUri}images/users/{imageName}";
+    }
+}

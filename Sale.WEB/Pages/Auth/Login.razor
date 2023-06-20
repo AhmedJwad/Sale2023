@@ -1,0 +1,58 @@
+﻿@page "/login"
+@inject IRepository repostry
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+@inject ILoginService loginService
+
+
+
+<EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
+    <DataAnnotationsValidator />
+    <div class="row">
+    <div class="col-md-4  offset-md-4">
+            <div class="card bg-light">
+                <div class="card-header justify-content-center">
+                    <span>
+                        <i class="oi oi-account-login" /> Login                      
+                    </span>
+                </div>
+                <div class="card-body">
+
+            <div class="mb-3">
+                <label>Email:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@loginDTO.Email" />
+                    <ValidationMessage For="@(() => loginDTO.Email)" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Password:</label>
+                <div>
+                    <InputText type="password" class="form-control" @bind-Value="@loginDTO.Password" />
+                    <ValidationMessage For="@(() => loginDTO.Password)" />
+                </div>
+            </div>
+                    <button class="btn btn-sm btn-primary float-end" type="submit"><i class="oi oi-check" /> Login</button>
+        </div>
+    </div>
+</div>
+</div>
+</EditForm>
+
+@code {
+    private LoginDTO loginDTO = new();
+
+    private async Task LoginAsync()
+    {
+        var responseHttp = await repostry.Post<LoginDTO, TokenDTO>("/api/accounts/Login", loginDTO);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await loginService.LoginAsync(responseHttp.Response!.Token);
+        navigationManager.NavigateTo("/");
+    }
+}

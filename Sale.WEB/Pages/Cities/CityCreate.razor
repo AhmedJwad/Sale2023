@@ -1,0 +1,38 @@
+﻿
+@page "/cities/create/{stateId:int}"
+@inject IRepository respostery
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
+<h3>City Create</h3>
+
+<CityForm @ref="cityForm" city="city" OnValidSubmit="CreateAync" ReturnAction="Return"/>
+
+@code {
+    private City city = new();
+    private CityForm? cityForm;
+
+    [Parameter]
+    public int stateId { get; set; }
+
+    private async Task CreateAync()
+    {
+        city.StateId = stateId;
+        var responsehttp = await respostery.Post("/api/cities", city);
+
+        if (responsehttp.Error)
+        {
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Return();
+    }
+    private void Return()
+    {
+        cityForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/states/details/{stateId}");
+   
+    }
+}
