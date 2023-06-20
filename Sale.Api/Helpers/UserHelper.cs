@@ -33,6 +33,11 @@ namespace Sale.Api.Helpers
          await _userManager.AddToRoleAsync(user, roleName);
         }
 
+        public async Task<IdentityResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
+
         public async Task CheckRoleAsync(string roleName)
         {
            bool roleExist=await _roleManager.RoleExistsAsync(roleName);
@@ -52,6 +57,13 @@ namespace Sale.Api.Helpers
             return user!;
         }
 
+        public async Task<User> GetUserAsync(Guid userId)
+        {
+            var user = await _context.Users.Include(x => x.City).ThenInclude(x => x.State)
+                 .ThenInclude(x => x.country).FirstOrDefaultAsync(x => x.Id == userId.ToString());
+            return user;
+        }
+
         public async Task<bool> IsUserinRoleAsync(User user, string roleName)
         {
            return await _userManager.IsInRoleAsync(user, roleName);
@@ -65,6 +77,11 @@ namespace Sale.Api.Helpers
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task<IdentityResult> UpdateUserAsync(User user)
+        {
+            return await _userManager.UpdateAsync(user);
         }
     }
 }

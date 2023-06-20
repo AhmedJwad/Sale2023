@@ -1,7 +1,7 @@
 ﻿@inject NavigationManager navigationManager
 <AuthorizeView>
     <Authorized>
-        <span>Hello, @context.User.Identity!.Name</span>
+        Hello,<a href="EditUser" class="nav-link btn btn-link"> @context.User.Identity!.Name</a>
         @if (!string.IsNullOrEmpty(photoUser))
         {
             <div class="mx-2">
