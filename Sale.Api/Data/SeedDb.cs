@@ -22,7 +22,7 @@ namespace Sale.Api.Data
         public async Task SeedAsync() 
         {
             await _context.Database.EnsureCreatedAsync();
-            // await CeckcountriesAsync();
+           // await CeckcountriesAsync();
             await CheckRolesAsync();
            await CheckUserAsync("1010", "Ahmed", "Almurshadi", "AhmedAlmurshadi@yopmail.com", "322 311 4620", "Babylon hilla babil", UserType.Admin);
 
