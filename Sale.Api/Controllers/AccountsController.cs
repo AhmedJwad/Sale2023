@@ -9,6 +9,7 @@ using Sale.Shared.DTOs;
 using Sale.Shared.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Sale.Api.Controllers
@@ -184,7 +185,7 @@ namespace Sale.Api.Controllers
             var result = await _userHelper.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors.FirstOrDefault().Description);
+                return BadRequest(result.Errors!.FirstOrDefault()!.Description);
             }
             return NoContent();
         }
@@ -227,6 +228,44 @@ namespace Sale.Api.Controllers
                 return NoContent();
             }
             return BadRequest(response.Message);
+        }
+        [HttpPost("RecoverPassword")]
+        public async Task<ActionResult> RecoverPassword([FromBody] EmailDTO model)
+        {
+            User user = await _userHelper.GetUserAsync(model.Email);
+            if(user==null) { return NotFound();}
+            var mytoken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+            var tokenlink = Url.Action("ResetPassword", "accounts", new
+            {
+                userid = user.Id,
+                token = mytoken,
+
+
+            }, HttpContext.Request.Scheme, _configuration["UrlWEB"]);
+            var response = _mailHelper.SendMail(user.Fullname, user.Email!,
+               $"Sales - Password Recovery",
+               $"<h1>Sales - Password Recovery</h1>" +
+               $"<p>To recover your password, please click 'Recover Password':</p>" +
+               $"<b><a href={tokenlink}>Recover password</a></b>");
+            if(response.IsSuccess)
+            {
+                return NoContent();
+            }
+            return BadRequest(response.Message);
+
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            User user = await _userHelper.GetUserAsync(model.Email);
+            if (user == null) { return NotFound();}
+            var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.Password);
+            if(result.Succeeded)
+            {
+                return NoContent();
+            }
+            return BadRequest(result.Errors!.FirstOrDefault()!.Description);
         }
     }
 }
