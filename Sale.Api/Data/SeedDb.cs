@@ -22,7 +22,9 @@ namespace Sale.Api.Data
         public async Task SeedAsync() 
         {
             await _context.Database.EnsureCreatedAsync();
-           // await CeckcountriesAsync();
+            // await CeckcountriesAsync();
+            await CheckCategoriesAsync();
+
             await CheckRolesAsync();
            await CheckUserAsync("1010", "Ahmed", "Almurshadi", "AhmedAlmurshadi@yopmail.com", "322 311 4620", "Babylon hilla babil", UserType.Admin);
 
@@ -31,7 +33,25 @@ namespace Sale.Api.Data
 
         }
 
-
+        private async Task CheckCategoriesAsync()
+        {
+          
+          if(!_context.Categories.Any())
+            {
+                _context.Categories.Add(new Category { Name = "Shoes" });
+                _context.Categories.Add(new Category { Name = "Cosmetics" });
+                _context.Categories.Add(new Category { Name = "Toys" });
+                _context.Categories.Add(new Category { Name = "Hardware" });
+                _context.Categories.Add(new Category { Name = "mobiles" });
+                _context.Categories.Add(new Category { Name = "Car Accessories" });
+                _context.Categories.Add(new Category { Name = "Garden" });
+                _context.Categories.Add(new Category { Name = "Home" });
+                _context.Categories.Add(new Category { Name = "Electronics" });
+                _context.Categories.Add(new Category { Name = "Clothes" });
+                _context.Categories.Add(new Category { Name = "Computers" });
+                await _context.SaveChangesAsync();
+            }
+        }
 
         private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
         {
