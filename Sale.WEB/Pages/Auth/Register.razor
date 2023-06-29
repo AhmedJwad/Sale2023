@@ -6,7 +6,10 @@
 @inject ILoginService loginservice
 
 <h3>Register New User</h3>
-
+@if (loading)
+{
+    <div class="spinner" />
+}
 <EditForm Model="userDTO" OnValidSubmit="CreteUserAsync">
  <DataAnnotationsValidator/>
   <div class="card">
@@ -211,6 +214,8 @@
         {
             var message = await repostoryhttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("error", message, SweetAlertIcon.Error);
+            loading=false;
+            return;
         }
         //await loginservice.LoginAsync(repostoryhttp.Response!.Token);
         loading = false;
