@@ -15,5 +15,9 @@ namespace Sale.Shared.Entities
         [MaxLength(100, ErrorMessage = "The {0} field must have a maximum of {1} characters.")]
         [Required(ErrorMessage = "The {0} field is required.")]
         public string Name { get; set; } = null!;  
+
+        public ICollection<ProductCategory>? ProductCategories { get; set; }
+
+        public int ProductCategoriesNumber=> ProductCategories==null ? 0 : ProductCategories.Count;
     }
 }
