@@ -10,6 +10,8 @@
 @code {
     private Category category = new();
     private CategoryForm? categoryForm;
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
     public int StateId { get; set; }
@@ -23,7 +25,7 @@
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 
