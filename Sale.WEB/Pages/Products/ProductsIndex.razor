@@ -67,10 +67,10 @@ else
                                         @product.ProductCategoriesNumber
                                     </td>
                                     <td>
-                                        @product.MainImage
+                                       @product.ProductImagesNumber
                                     </td>
                                     <td>
-                                        <img src="@product.MainImage" style="width:100px;"/>
+                                        <img src="@($"{navigationManager.BaseUri}images/{@product.MainImage}")" style="width:100px;" />
                                     </td>
                                     <td>
                                         <a href="/products/edit/@product.Id" class="btn btn-warning"><i class="oi oi-pencil" /> Edit</a>

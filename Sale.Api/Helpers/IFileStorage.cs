@@ -3,6 +3,7 @@
     public interface IFileStorage
     {
         Task<string> SaveFileAsync(byte[] content, string extention, string containerName);
+        Task<string> SaveimageAsync(byte[] content, string extention, string containerName);
         Task RemoveFileAsync(string path, string nombreContenedor);
         async Task<string> EditFileAsync(byte[] content, string extention, string containerName, string path)
         {

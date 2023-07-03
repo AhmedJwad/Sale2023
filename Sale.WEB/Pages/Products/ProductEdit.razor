@@ -1,0 +1,123 @@
+﻿@page "/products/edit/{ProductId:int}"
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@inject IRepository repository
+@attribute [Authorize(Roles ="Admin")]
+
+@if (Loading)
+{
+    <div class="spinner" />
+}
+else
+{
+    <ProductForm @ref="productForm" ProductDTO="productDTO" SelectedCategories="selectedCategories" NonSelectedCategories="nonselectedCategories" OnValidSubmit="SaveChangesAsync" ReturnAction="Return" IsEdit=true AddImageAction="AddImageAsync" RemoveImageAction="RemoveImageAsyc" />
+}
+
+
+
+@code {
+    private ProductDTO productDTO=new ProductDTO
+    {
+        ProductCategoriesIds=new List<int>(),
+        productImages=new List<string>(),
+    };
+
+    private ProductForm? productForm;
+    private List<Category> selectedCategories=new();
+    private List<Category> nonselectedCategories=new();
+    private bool Loading = true;
+    private Product? product;
+
+    [Parameter]
+    public int ProductId{ get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadProductAsync();
+        await LoadCategoriesAsync();
+
+    }
+    private async Task AddImageAsync()
+    {
+    }
+
+    private async Task RemoveImageAsyc()
+    {
+    }
+
+    private async Task LoadProductAsync()
+    {
+        Loading = true;
+        var responsehttp = await repository.Get<Product>($"/api/products/{ProductId}");
+        if(responsehttp.Error)
+        {
+            Loading = false;
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        product = responsehttp.Response!;
+        productDTO = toProductDTO(product);
+        Loading = false;
+
+    }
+    private ProductDTO toProductDTO(Product product)
+    {
+        return new ProductDTO
+            {
+                Description = product.Description,
+                Name = product.Name,
+                Id = product.Id,
+                Price = product.Price,
+                Stock = product.Stock,
+                ProductCategoriesIds = product.productCategories!.Select(x => x.CategoryId).ToList(),
+                productImages = product.productImages!.Select(x => x.Image).ToList(),
+    };
+    }
+    private async Task LoadCategoriesAsync()
+    {
+        Loading = true;
+        var responsehttp = await repository.Get<List<Category>>($"/api/categories");
+        if(responsehttp.Error)
+        {
+            Loading = false;
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        var categories = responsehttp.Response!;
+        foreach (var item in categories!)
+        {
+            var found = product!.productCategories.FirstOrDefault(x => x.CategoryId == item.Id);
+            if(found ==null)
+            {
+                nonselectedCategories.Add(item);
+            }
+            else
+            {
+                selectedCategories.Add(item);
+            }
+        }
+        Loading = false;
+    }
+
+    private async Task SaveChangesAsync()
+    {
+        var httpResponse = await repository.Put("/api/products", productDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Return();
+
+    }
+    private void Return()
+    {
+        productForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo($"/products");
+    }
+
+}

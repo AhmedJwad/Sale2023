@@ -44,8 +44,9 @@ namespace Sale.Shared.Entities
         [Display (Name ="Images")]
 
         public ICollection<ProductImage>? productImages { get; set; }
+        [Display(Name = "Images")]
+        public int ProductImagesNumber => productImages == null ? 0 : productImages.Count;
 
-        public string MainImage => productImages == null ? string.Empty : productImages.FirstOrDefault()!
-            .Image;
+        public string MainImage => productImages == null ? string.Empty : productImages.FirstOrDefault()!.Image;
     }
 }
