@@ -1,5 +1,5 @@
 ﻿@inject SweetAlertService sweetAlertService
-
+@inject NavigationManager navigationManager
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
 
 <EditForm EditContext="editContext" OnValidSubmit="OnDataAnnotationsValidatedAsync">
@@ -70,7 +70,7 @@
 
 @if (IsEdit && ProductDTO.productImages is not null)
 {
-    <CarouselView Images="ProductDTO.productImages" />
+    <CarouselView Images="ProductImageUrls" />
 }
 
 @code {
@@ -78,6 +78,7 @@
     private List<MultipleSelectorModel> selected { get; set; } = new();
     private List<MultipleSelectorModel> nonSelected { get; set; } = new();
     private string? imageUrl;
+    private List<string> ProductImageUrls => ProductDTO.productImages.Select(image => $"{navigationManager.BaseUri}images/{image}").ToList();
 
     [Parameter]
     public bool IsEdit { get; set; } = false;
