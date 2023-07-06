@@ -101,6 +101,7 @@ namespace Sale.Api.Controllers
 
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult> Get([FromQuery] PaginationDTO paginationDTO)
         {
             var queryable = _context.Products.Include(x => x.productCategories).Include(x => x.productImages)
@@ -112,6 +113,7 @@ namespace Sale.Api.Controllers
             return Ok(await queryable.OrderBy(x=>x.Name).Paginate(paginationDTO).ToListAsync());
         }
         [HttpGet("totalPages")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO paginationDTO)
         {
             var queryable=_context.Products.Include(x=>x.productCategories)
@@ -125,6 +127,7 @@ namespace Sale.Api.Controllers
             return Ok(totlapage);
         }
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetAsync(int id)
         {
             var product = await _context.Products.Include(x => x.productCategories!)
