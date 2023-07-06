@@ -43,5 +43,6 @@ namespace Sale.Shared.Entities
         public string ImageFullPath => Photo == string.Empty
             ? $"http://soccerworldcup.somee.com/images/noimage.png"
             : $"https://localhost:7011/{Photo}";
+        public ICollection<TemporalSale>? TemporalSales { get; set; }
     }
 }

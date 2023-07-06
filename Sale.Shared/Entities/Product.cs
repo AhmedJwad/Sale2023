@@ -48,5 +48,7 @@ namespace Sale.Shared.Entities
         public int ProductImagesNumber => productImages == null ? 0 : productImages.Count;
 
         public string MainImage => productImages == null ? string.Empty : productImages.FirstOrDefault()!.Image;
+
+        public ICollection<TemporalSale>? TemporalSales { get; set; }
     }
 }
