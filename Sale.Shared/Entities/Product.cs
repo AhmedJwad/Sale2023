@@ -50,5 +50,7 @@ namespace Sale.Shared.Entities
         public string MainImage => productImages == null ? string.Empty : productImages.FirstOrDefault()!.Image;
 
         public ICollection<TemporalSale>? TemporalSales { get; set; }
+        public ICollection<SaleDetail>? SaleDetails { get; set; }
+
     }
 }

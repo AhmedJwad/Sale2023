@@ -44,5 +44,7 @@ namespace Sale.Shared.Entities
             ? $"http://soccerworldcup.somee.com/images/noimage.png"
             : $"https://localhost:7011/{Photo}";
         public ICollection<TemporalSale>? TemporalSales { get; set; }
+        public ICollection<Order>? Sales { get; set; }
+
     }
 }

@@ -119,9 +119,32 @@ else
 
         }
     }
-    private void ConfirmOrderAsync()
+    private async void ConfirmOrderAsync()
     {
-        //TODO: Pending to implement
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+        {
+                Title = "Confirmation",
+                Text = "Are you sure you want to confirm the order?",
+                Icon=SweetAlertIcon.Question,
+                ShowCancelButton=true,
+
+        });
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var httpResponse = await repostry.Post("/api/sales", saleDTO);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        navigationManager.NavigateTo("/Orders/SaleConfirmed");
+
     }
 
     private async Task Delete(int temporalSaleId)
