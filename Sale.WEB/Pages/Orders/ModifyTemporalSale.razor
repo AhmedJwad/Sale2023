@@ -1,0 +1,147 @@
+﻿@page "/Orders/ModifyTemporalSale/{TemporalSaleId:int}"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+@attribute [Authorize(Roles =("Admin , User"))]
+
+
+@if (loading)
+{
+    <div class="spinner" />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <span>
+                <i class="oi oi-star" /> @product!.Name
+                <a class="btn btn-sm btn-success float-end" href="/"><i class="oi oi-arrow-thick-left" />Go back</a>
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Name:</label>
+                        <div>
+                            <b>@product.Name</b>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Description:</label>
+                        <div>
+                            <b>@product.Description</b>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Price:</label>
+                        <div>
+                            <b>@($"{product.Price:C2}")</b>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Inventory:</label>
+                        <div>
+                            <b>@($"{product.Stock:N2}")</b>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Categories:</label>
+                        <div>
+                            @foreach (var category in categories!)
+                            {
+                                <div class="mx-2">
+                                    <b>@category</b>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <EditForm Model="temporalSaleDTO" OnValidSubmit="UpdateCartAsync">
+                        <DataAnnotationsValidator />
+                        <div class="mb-3">
+                            <label>Amount:</label>
+                            <div>
+                                <InputNumber class="form-control" @bind-Value="@temporalSaleDTO!.Quantity" />
+                                <ValidationMessage For="@(() => temporalSaleDTO.Quantity)" />
+                            </div>
+                            <label>Comments:</label>
+                            <div>
+                                <InputText class="form-control" @bind-Value="@temporalSaleDTO.Remarks" />
+                                <ValidationMessage For="@(() => temporalSaleDTO.Remarks)" />
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="submit"><i class="oi oi-check" /> Update Shopping Cart</button>
+                    </EditForm>
+                </div>
+            </div>
+            <CarouselView Images="images" />
+        </div>
+    </div>
+}
+
+
+@code {
+    private List<string>? categories;
+    private List<string>? images;
+    private bool loading = true;
+    private Product? product;
+    private bool isAuthenticated;
+    private TemporalSaleDTO? temporalSaleDTO;
+
+    [Parameter]
+    public int TemporalSaleId{ get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadTemporalSaleAsync();
+    }
+
+    private async Task LoadTemporalSaleAsync()
+    {
+        loading = true;
+        var responsehttp = await repository.Get<TemporalSale>($"/api/temporalSales/{TemporalSaleId}");
+        if(responsehttp.Error)
+        {
+            loading = false;
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+        var temporalSale = responsehttp.Response!;
+        temporalSaleDTO =new TemporalSaleDTO{
+            Id=temporalSale.Id,
+            ProductId=temporalSale.productId,
+            Quantity=temporalSale.Quantity,
+            Remarks=temporalSale.Remarks,
+            
+        };
+
+        product = temporalSale.Product;
+        categories = product!.productCategories!.Select(x => x.Category.Name).ToList();
+        images = product!.productImages!.Select(image => $"{navigationManager.BaseUri}images/{image.Image}").ToList();
+        loading = false;
+    }
+    private async Task UpdateCartAsync()
+    {
+        var responsehttp = await repository.Put("/api/temporalSales", temporalSaleDTO); if (responsehttp.Error)
+        {
+            var message = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        var toast2 = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.TopEnd,
+                ShowConfirmButton = false,
+                Timer = 5000
+            });
+        await toast2.FireAsync(icon: SweetAlertIcon.Success, message: "Modified product in the purchase.");
+        navigationManager.NavigateTo("/");
+
+    }
+
+}
