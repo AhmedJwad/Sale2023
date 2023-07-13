@@ -61,6 +61,22 @@ namespace Sale.Api.Controllers
             double totalPage = Math.Ceiling(count / pagination.REcordNumber);
             return Ok(totalPage);
         }
+
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult>Get(int id)
+        {
+            var sale = await _context.Sales.Include(x => x.User!)
+                .ThenInclude(x => x.City!).ThenInclude(x => x.State!)
+                .ThenInclude(x => x.country).Include(x => x.SaleDetails!)
+                .ThenInclude(x => x.Product).ThenInclude(x => x.productImages)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if(sale ==null)
+            {
+                return NotFound();
+            }
+            return Ok(sale);
+        }
         [HttpPost]
         public async Task<ActionResult> Post(SaleDTO saleDTO)
         {

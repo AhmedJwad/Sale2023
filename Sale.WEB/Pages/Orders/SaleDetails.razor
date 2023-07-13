@@ -1,0 +1,147 @@
+﻿@page "/Orders/SaleDetails/{SaleId:int}"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+@attribute [Authorize(Roles = "Admin")]
+
+@if (sale is null)
+{
+    <div class="spinner" />
+}
+else
+{
+    <GenericList MyList="sale.SaleDetails!.ToList()">
+        <Body>
+            <div class="card">
+                <div class="card-header">
+                    <span>
+                        <i class="oi oi-dollar"></i> @sale.User!.Fullname
+                        @if (sale.OrderStatus == OrderStatus.New)
+                        {
+                            <button class="btn btn-sm btn-danger float-end mx-2" @onclick=@(() => CancelSaleAsync())><i class="oi oi-trash" /> Cancel</button>
+                            <button class="btn btn-sm btn-primary float-end mx-2" @onclick=@(() => DispatchSaleAsync())><i class="oi oi-external-link" /> Back off</button>
+                        }
+                        else if (sale.OrderStatus == OrderStatus.Dispatched)
+                        {
+                            <button class="btn btn-sm btn-warning float-end mx-2" @onclick=@(() => SendSaleAsync())><i class="oi oi-location" /> Dispatched</button>
+                        }
+                        else if (sale.OrderStatus == OrderStatus.Sent)
+                        {
+                            <button class="btn btn-sm btn-dark float-end mx-2" @onclick=@(() => ConfirmSaleAsync())><i class="oi oi-thumb-up" /> Send</button>
+                        }
+                        <a class="btn btn-sm btn-success float-end" href="/sales"><i class="oi oi-arrow-thick-left" /> Go back</a>
+                    </span>
+                </div>
+                <div class="row mx-2 my-2">
+                    <div class="col-2">
+                        <p>Customer</p>
+                        <p>Document</p>
+                        <p>Phone</p>
+                        <p>Email</p>
+                        <p>Address</p>
+                    </div>
+                    <div class="col-4">
+                        <p><strong>@sale.User.Fullname</strong></p>
+                        <p><strong>@sale.User.Document</strong></p>
+                        <p><strong>@sale.User.PhoneNumber</strong></p>
+                        <p><strong>@sale.User.UserName</strong></p>
+                        <p><strong>@sale.User.Address, @sale.User.City!.Name, @sale.User.City.State!.Name, @sale.User.City.State.country!.Name</strong></p>
+                    </div>
+                    <div class="col-2">
+                        <p>State</p>
+                        <p>Date</p>
+                        <p>Comments</p>
+                        <p>Lines</p>
+                        <p>Amount</p>
+                        <p>Value</p>
+                    </div>
+                    <div class="col-4">
+                        <p><strong>@sale.OrderStatus</strong></p>
+                        <p><strong>@($"{sale.Date.ToLocalTime():yyyy/MM/dd hh:mm tt}")</strong></p>
+                        <p><strong>@(string.IsNullOrEmpty(sale.Remarks) ? "NA" : sale.Remarks)</strong></p>
+                        <p><strong>@sale.Lines</strong></p>
+                        <p><strong>@($"{sale.Quantity:N2}")</strong></p>
+                        <p><strong>@($"{sale.Value:C2}")</strong></p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Image</th>
+                                <th>Comments</th>
+                                <th>Amount</th>
+                                <th>Price</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var saleDetail in sale.SaleDetails!)
+                            {
+                                <tr>
+                                    <td>@saleDetail.Product!.Name</td>
+                                    <td><img src="@($"{navigationManager.BaseUri}images/{saleDetail.Product!.MainImage}")" style="width:100px;" /></td>
+                                    <td>@saleDetail.Remarks</td>
+                                    <td>@($"{saleDetail.Quantity:N2}")</td>
+                                    <td>@($"{saleDetail.Product!.Price:C2}")</td>
+                                    <td>@($"{saleDetail.Value:C2}")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </Body>
+    </GenericList>
+}
+
+
+@code {
+    private Order? sale;
+
+    [Parameter]
+    public int SaleId { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var responsehttp = await repository.Get<Order>($"api/sales/{SaleId}");
+        if (responsehttp.Error)
+        {
+            if (responsehttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/sales");
+                return;
+            }
+            var messageError = await responsehttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            return;
+        }
+        sale = responsehttp.Response;
+    }
+    private void CancelSaleAsync()
+    {
+
+    }
+
+    private void DispatchSaleAsync()
+    {
+
+    }
+
+    private void SendSaleAsync()
+    {
+
+    }
+
+    private void ConfirmSaleAsync()
+    {
+
+    }
+
+}
