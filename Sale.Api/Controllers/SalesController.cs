@@ -30,18 +30,27 @@ namespace Sale.Api.Controllers
         public async Task<ActionResult>Get([FromQuery]PaginationDTO pagination)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == User.Identity!.Name);
-            if(user == null)
+            if (user == null)
             {
-                return BadRequest("User not found");
+                return BadRequest("User not valid.");
             }
-            var querable= _context.Sales.Include(x=>x.User).Include(x=>x.SaleDetails)
-                .ThenInclude(x=>x.Product).AsQueryable();
+
+            var queryable = _context.Sales
+                .Include(s => s.User!)
+                .Include(s => s.SaleDetails!)
+                .ThenInclude(sd => sd.Product)
+                .AsQueryable();
+
             var isAdmin = await _userHelper.IsUserinRoleAsync(user, UserType.Admin.ToString());
             if (!isAdmin)
             {
-                querable = querable.Where(x => x.User!.Email == User.Identity!.Name);
+                queryable = queryable.Where(s => s.User!.Email == User.Identity!.Name);
             }
-            return Ok (await querable.OrderByDescending(x=>x.Date).Paginate(pagination).ToListAsync());
+
+            return Ok(await queryable
+                .OrderByDescending(x => x.Date)
+                .Paginate(pagination)
+                .ToListAsync());
         }
         [HttpGet("totalPages")]
         public async Task<ActionResult> GetPages([FromQuery]PaginationDTO pagination)
@@ -87,5 +96,46 @@ namespace Sale.Api.Controllers
             }
             return BadRequest(response.Message);
         }
+
+        [HttpPut]
+        public async Task<ActionResult> Put(SaleDTO saleDTO)
+        {
+            var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            if (user ==null)
+            {
+                return NotFound();
+            }
+            var isAdmin = await _userHelper.IsUserinRoleAsync(user, UserType.Admin.ToString());
+            if(!isAdmin)
+            {
+                return BadRequest("Only allowed for administrators");
+            }
+            var sale = await _context.Sales.Include(s => s.SaleDetails).FirstOrDefaultAsync(x => x.Id == saleDTO.Id);
+            if(sale ==null) { return NotFound(); }
+            if(saleDTO.OrderStatus==OrderStatus.Cancelled)
+            {
+                await ReturnStockAsync(sale);
+
+            }
+           
+            sale.OrderStatus = saleDTO.OrderStatus;
+            _context.Update(sale);
+            await _context.SaveChangesAsync();
+            return Ok(sale);
+        }
+
+        private async Task ReturnStockAsync(Order sale)
+        {
+            foreach (var item in sale.SaleDetails!)
+            {
+                var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == item.ProductId);
+                if(product !=null)
+                {
+                    product.Stock += item.Quantity;
+                }
+              await  _context.SaveChangesAsync();
+            }
+        }
+        
     }
 }

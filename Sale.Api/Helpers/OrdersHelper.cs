@@ -53,8 +53,8 @@ namespace Sale.Api.Helpers
                     Product? product = await _context.Products.FindAsync(item.Product!.Id);
                     if(product !=null)
                     {
-                        product.Stock = item.Quantity;
-                        _context.Products.Update(product);
+                    product.Stock -= item.Quantity;
+                    _context.Products.Update(product);
                     }
                     _context.TemporalSales.Remove(item);
 

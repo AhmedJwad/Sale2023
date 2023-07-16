@@ -29,6 +29,7 @@ namespace Sale.Api.Data
             await CheckCategoriesAsync();
             await CheckRolesAsync();
            await CheckUserAsync("1010", "Ahmed", "Almurshadi", "AhmedAlmurshadi@yopmail.com", "322 311 4620", "Babylon hilla babil","bob.jpg", UserType.Admin);
+           await CheckUserAsync("1010", "Ahmed", "Almurshadi", "sohieb.kk@gmail.com", "322 311 4620", "Babylon hilla babil", "bob.jpg", UserType.Admin);
             await CheckProductsAsync();
         }
 
