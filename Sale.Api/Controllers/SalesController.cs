@@ -106,7 +106,7 @@ namespace Sale.Api.Controllers
                 return NotFound();
             }
             var isAdmin = await _userHelper.IsUserinRoleAsync(user, UserType.Admin.ToString());
-            if(!isAdmin)
+            if(!isAdmin && saleDTO.OrderStatus != OrderStatus.Cancelled)
             {
                 return BadRequest("Only allowed for administrators");
             }
