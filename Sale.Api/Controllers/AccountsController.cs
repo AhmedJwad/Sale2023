@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Sale.Api.Data;
 using Sale.Api.Helpers;
 using Sale.Shared.DTOs;
-using Microsoft.EntityFrameworkCore;
+using Sale.Shared.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
-using Sale.Shared.Entities;
 
 namespace Sale.Api.Controllers
 {

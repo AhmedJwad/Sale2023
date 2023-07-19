@@ -4,6 +4,7 @@ using Sale.Api.Services;
 using Sale.Shared.Entities;
 using Sale.Shared.Enums;
 using Sale.Shared.Response;
+using System.Runtime.InteropServices;
 
 namespace Sale.Api.Data
 {
@@ -88,7 +89,16 @@ namespace Sale.Api.Data
 
             foreach (string? image in images)
             {
-                var filePath = $"{Environment.CurrentDirectory}\\Images\\products\\{image}";
+                string filePath;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    filePath = $"{Environment.CurrentDirectory}\\Images\\products\\{image}";
+                }
+                else
+                {
+                    filePath = $"{Environment.CurrentDirectory}/Images/products/{image}";
+                }
+
                 var fileBytes = File.ReadAllBytes(filePath);
                 var imagePath = await _fileStorage.SaveFileAsync(fileBytes, "jpg", "products");
                 prodcut.productImages.Add(new ProductImage { Image = imagePath });
@@ -121,7 +131,16 @@ namespace Sale.Api.Data
             string email, string phone, string address, string image, UserType userType)
         {
             var user = await _userHelper.GetUserAsync(email);
-            var filePath = $"{Environment.CurrentDirectory}\\Images\\users\\{image}";
+            string filePath;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                filePath = $"{Environment.CurrentDirectory}\\Images\\users\\{image}";
+            }
+            else
+            {
+                filePath = $"{Environment.CurrentDirectory}/Images/users/{image}";
+            }
+
             var fileBytes = File.ReadAllBytes(filePath);
             var imagePath = await _fileStorage.SaveFileAsync(fileBytes, "jpg", "users");
 
